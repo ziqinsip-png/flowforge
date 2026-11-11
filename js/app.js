@@ -96,6 +96,33 @@
     $('#stRight').innerHTML = esc(st.prog.attributes.name) + ' · ' + st.prog.functions.length + ' function(s)';
     markBpt();
     autoFit();
+    layoutConnectors();
+  }
+  // A branch column can be far wider than the shape above it (nested ifs), so the horizontal
+  // connector is measured, not assumed: it always runs from the column centre to the parent's centre line.
+  function layoutConnectors() {
+    const z = prefs.zoom || 1;
+    $('#flow').querySelectorAll('.branch').forEach((br) => {
+      const cols = Array.from(br.children).filter((c) => c.classList.contains('bl'));
+      if (cols.length < 2) { return; }
+      const bRect = br.getBoundingClientRect();
+      const centre = bRect.left + bRect.width / 2;
+      cols.forEach((c) => {
+        const cr = c.getBoundingClientRect();
+        const own = cr.left + cr.width / 2;
+        const lo = Math.min(centre, own), hi = Math.max(centre, own);
+        ['.run', '.runb'].forEach((sel) => {
+          const bar = c.querySelector(':scope > ' + sel);
+          if (!bar) { return; }
+          bar.style.left = ((lo - cr.left) / z) + 'px';
+          bar.style.right = ((cr.right - hi) / z) + 'px';
+        });
+      });
+    });
+    // a loop's return line has to cross half its own column, which a % width cannot express
+    $('#flow').querySelectorAll('.bl.loop').forEach((c) => {
+      c.style.setProperty('--half', (c.getBoundingClientRect().width / z / 2) + 'px');
+    });
   }
   function branch(list, trail) {
     const wrap = el('div', 'row');
@@ -143,6 +170,7 @@
       const cols = el('div', 'branch');
       cols.appendChild(col(s, s.children[c.els], trail, 'False', true));
       cols.appendChild(col(s, s.children[c.then], trail, 'True', false));
+      cols.appendChild(el('div', 'stubTop'));
       out.appendChild(cols);
       out.appendChild(el('div', 'merge'));
     } else if (s.type === 'For') {
@@ -1421,6 +1449,8 @@
   function setZoom(z) {
     prefs.zoom = Math.min(2, Math.max(.4, Math.round(z * 100) / 100));
     $('#flow').style.zoom = prefs.zoom;
+    // connector thickness is derived from the zoom so a line never falls below 2 device pixels
+    $('#flow').style.setProperty('--z', prefs.zoom);
     $('#zVal').textContent = Math.round(prefs.zoom * 100) + '%';
     savePrefs();
   }
