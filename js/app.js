@@ -75,9 +75,9 @@
   function assignHtml(p) {
     const e = p.expression || '';
     if (p.declare) { return esc(e); }
-    const m = e.match(/^\s*([A-Za-z][A-Za-z0-9]*)\s*(\[[^\]]*\])?\s*=\s*([\s\S]*)$/);
-    if (!m) { return esc(e); }
-    return '<b>' + esc(m[1] + (m[2] || '')) + '</b> = ' + esc(m[3]);
+    const m = FG.splitAssign(e);
+    if (m.at < 0) { return esc(e); }
+    return '<b>' + esc(m.lhs) + '</b> = ' + esc(m.rhs);
   }
   function forHtml(p) {
     return esc([p.variable, '=', p.start, 'To', p.end, 'Step', p.step || '1'].join(' '));
@@ -95,6 +95,7 @@
     $('#fnSel').value = st.fn;
     $('#stRight').innerHTML = esc(st.prog.attributes.name) + ' · ' + st.prog.functions.length + ' function(s)';
     markBpt();
+    autoFit();
   }
   function branch(list, trail) {
     const wrap = el('div', 'row');
@@ -611,9 +612,9 @@
         return;
       }
       case 'Assign': {
-        const m = String(p.expression || '').match(/^\s*([A-Za-z][A-Za-z0-9]*(?:\s*\[[^\]]*\])?)\s*=\s*([\s\S]+)$/);
-        if (!m) { throw FG.err('Malformed assignment: ' + p.expression); }
-        store(frame, m[1], evalx(frame, m[2]), s);
+        const m = FG.splitAssign(p.expression);
+        if (m.at < 0) { throw FG.err('Malformed assignment: ' + p.expression); }
+        store(frame, m.lhs, evalx(frame, m.rhs), s);
         return;
       }
       case 'Output': {
@@ -976,7 +977,7 @@
         case 'End': o.push(ind + '<end/>'); return;
         case 'Declare': o.push(ind + '<declare name="' + q(p.variable) + '" type="' + q(p.type) +
           '" array="' + (p.array ? 'True' : 'False') + '" size="' + q(p.size) + '"/>'); return;
-        case 'Assign': o.push(ind + '<assign variable="' + q(p.variable || (String(p.expression || '').split('=')[0] || '').trim()) +
+        case 'Assign': o.push(ind + '<assign variable="' + q(p.variable || FG.splitAssign(p.expression).lhs) +
           '" expression="' + q(p.expression) + '"/>'); return;
         case 'Input': o.push(ind + '<input variable="' + q(p.variable) + '"/>'); return;
         case 'Output': o.push(ind + '<output expression="' + q(p.expression) + '"/>'); return;
@@ -1028,6 +1029,7 @@
       if (body) { f.body = parseSeq(body); }
       if (!f.body.some((s) => s.type === 'Start')) { f.body.unshift(FG.shape('Start', {})); }
       if (!f.body.some((s) => s.type === 'End')) { f.body.push(FG.shape('End', {})); }
+      FG.walk(f.body, (s) => { if (s.type === 'Start') { s.props.main = f.name === 'Main'; } });
       prog.functions.push(f);
     }
     if (!prog.functions.length) { prog.functions = [FG.newProgram().functions[0]]; }
@@ -1044,13 +1046,13 @@
     function parseShape(n) {
       const g = (a) => n.getAttribute(a) || '';
       const tag = n.tagName.toLowerCase();
-      if (tag === 'start') { return FG.shape('Start', { main: curIsMain() }); }
+      if (tag === 'start') { return FG.shape('Start', {}); }
       if (tag === 'end') { return FG.shape('End', {}); }
       if (tag === 'declare') { return FG.shape('Declare', { variable: g('name') || g('variable'), type: g('type') || 'Integer', array: /true/i.test(g('array')), size: g('size') }); }
       if (tag === 'assign') {
         const v = g('variable'), e = g('expression');
-        const full = v && e.indexOf('=') < 0 ? v + ' = ' + e : e;
-        return FG.shape('Assign', { variable: v || (full.split('=')[0] || '').trim(), expression: full });
+        const full = v && FG.splitAssign(e).at < 0 ? v + ' = ' + e : e;
+        return FG.shape('Assign', { variable: v || FG.splitAssign(full).lhs, expression: full });
       }
       if (tag === 'input') { return FG.shape('Input', { variable: g('variable') }); }
       if (tag === 'output') { return FG.shape('Output', { expression: g('expression') }); }
@@ -1079,7 +1081,6 @@
         return s;
       }
       return null;
-      function curIsMain() { return n.ownerDocument && true; }
     }
     function kids(n, skipSegment, only) {
       const out = [];
@@ -1397,6 +1398,26 @@
   let prefs = { zoom: 1, grid: true, motion: true, theme: 'aurora' };
   try { Object.assign(prefs, JSON.parse(localStorage.getItem(UI) || '{}')); } catch (e) {}
   function savePrefs() { try { localStorage.setItem(UI, JSON.stringify(prefs)); } catch (e) {} }
+  // phone/tablet: the chart must fit the window without horizontal panning
+  let fitLock = false;
+  function fitZoom() {
+    const wrap = $('#canvasWrap'), flow = $('#flow');
+    // #flow stretches to min-width:100%, so measure its true content width unzoomed and unstretched
+    const prevZoom = flow.style.zoom;
+    flow.style.zoom = '1';
+    flow.style.minWidth = '0';
+    const w = flow.getBoundingClientRect().width;
+    flow.style.minWidth = '';
+    flow.style.zoom = prevZoom;
+    const avail = wrap.clientWidth - 26;
+    if (!(w > 0) || !(avail > 0) || w <= avail) { return 1; }
+    return Math.max(.6, Math.min(1, avail / w));
+  }
+  function autoFit() {
+    if (fitLock || window.innerWidth > 900) { return; }
+    const z = fitZoom();
+    if (Math.abs(z - prefs.zoom) > .005) { setZoom(z); }
+  }
   function setZoom(z) {
     prefs.zoom = Math.min(2, Math.max(.4, Math.round(z * 100) / 100));
     $('#flow').style.zoom = prefs.zoom;
@@ -1552,6 +1573,15 @@
       document.querySelectorAll('.hasSub.subOpen').forEach((s) => s.classList.remove('subOpen'));
       openWrap = null;
     }
+    function openMenu(wrap, btn, drop, m) {
+      closeMenus();
+      renderItems(drop, m.items());
+      wrap.classList.add('open'); btn.classList.add('on'); openWrap = wrap;
+      drop.style.marginLeft = '0px';
+      const r = drop.getBoundingClientRect();
+      const over = r.right - window.innerWidth + 8;
+      if (over > 0) { drop.style.marginLeft = '-' + Math.min(over, Math.max(0, r.left - 8)) + 'px'; }
+    }
     function renderItems(box, items) {
       box.innerHTML = '';
       for (const it of items) {
@@ -1584,17 +1614,12 @@
       const drop = el('div', 'drop');
       btn.onclick = (e) => {
         e.stopPropagation();
-        const wasOpen = openWrap === wrap;
-        closeMenus();
-        if (wasOpen) { return; }
-        renderItems(drop, m.items());
-        wrap.classList.add('open'); btn.classList.add('on'); openWrap = wrap;
+        if (openWrap === wrap) { closeMenus(); return; }
+        openMenu(wrap, btn, drop, m);
       };
       btn.onmouseenter = () => {
         if (!openWrap || openWrap === wrap) { return; }
-        closeMenus();
-        renderItems(drop, m.items());
-        wrap.classList.add('open'); btn.classList.add('on'); openWrap = wrap;
+        openMenu(wrap, btn, drop, m);
       };
       wrap.appendChild(btn); wrap.appendChild(drop);
       nav.appendChild(wrap);
@@ -1626,7 +1651,14 @@
     const tb = $('#toolbar');
     const tbMore = () => document.body.classList.toggle('tbMore', tb.scrollWidth > tb.clientWidth + 4);
     tbMore();
-    window.addEventListener('resize', tbMore);
+    let lastFitW = window.innerWidth;
+    window.addEventListener('resize', () => {
+      tbMore();
+      if (Math.abs(window.innerWidth - lastFitW) < 40) { return; }
+      lastFitW = window.innerWidth;
+      fitLock = false;
+      autoFit();
+    });
     tb.addEventListener('wheel', (e) => {
       if (tb.scrollWidth <= tb.clientWidth) { return; }
       e.preventDefault();
@@ -1644,12 +1676,13 @@
     $('#fnSel').onchange = (e) => { stopRun(); st.fn = e.target.value; render(); };
 
     // zoom pill + ctrl-wheel zoom
-    $('#zIn').onclick = () => setZoom(prefs.zoom + .1);
-    $('#zOut').onclick = () => setZoom(prefs.zoom - .1);
-    $('#zFit').onclick = () => { setZoom(1); $('#canvasWrap').scrollTo({ top: 0, behavior: 'smooth' }); status('View reset to 100%.'); };
+    $('#zIn').onclick = () => { fitLock = true; setZoom(prefs.zoom + .1); };
+    $('#zOut').onclick = () => { fitLock = true; setZoom(prefs.zoom - .1); };
+    $('#zFit').onclick = () => { fitLock = true; setZoom(fitZoom()); $('#canvasWrap').scrollTo({ top: 0, left: 0, behavior: 'smooth' }); status('Flowchart fitted to the window.'); };
     $('#canvasWrap').addEventListener('wheel', (e) => {
       if (!e.ctrlKey) { return; }
       e.preventDefault();
+      fitLock = true;
       setZoom(prefs.zoom + (e.deltaY < 0 ? .1 : -.1));
     }, { passive: false });
 

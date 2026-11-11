@@ -395,7 +395,7 @@
     };
     if (type && type !== 'Void') {
       f.returnVar = FG.normName(f.variable || (name + '_result'));
-      f.body.push(FG.shape('Assign', { variable: f.returnVar, expression: FG.defaultValue(type) }));
+      f.body.push(FG.shape('Assign', { variable: f.returnVar, expression: f.returnVar + ' = ' + FG.defaultLiteral(type) }));
     }
     if (f.name !== 'Main') { f.body.unshift(FG.shape('Start', {})); }
     f.body.push(FG.shape('End', {}));
@@ -403,6 +403,27 @@
   };
   FG.defaultValue = function (type) {
     return type === 'Integer' ? 0 : type === 'Real' ? 0 : type === 'Boolean' ? false : '';
+  };
+  FG.defaultLiteral = function (type) {
+    return type === 'Boolean' ? 'False' : type === 'String' ? '""' : '0';
+  };
+  // Split "<target> = <expression>" without tripping over >=, <=, <>, !=, == or '=' inside a string.
+  FG.splitAssign = function (text) {
+    const s = String(text == null ? '' : text);
+    let q = null;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if (q) { if (c === q) { q = null; } continue; }
+      if (c === '"' || c === "'") { q = c; continue; }
+      if (c !== '=') { continue; }
+      const p = s[i - 1], n = s[i + 1];
+      if (p === '>' || p === '<' || p === '!' || p === '=' || p === '-') { continue; }
+      if (n === '=' || n === '>') { continue; }
+      const lhs = s.slice(0, i).trim();
+      if (!/^[A-Za-z][A-Za-z0-9]*(?:\s*\[[^\]]*\])?$/.test(lhs)) { continue; }
+      return { lhs: lhs, rhs: s.slice(i + 1).trim(), at: i };
+    }
+    return { lhs: '', rhs: s.trim(), at: -1 };
   };
   FG.newProgram = function () {
     const main = { name: 'Main', type: 'Void', variable: '', returnVar: '', params: [], body: [FG.shape('Start', {}), FG.shape('End', {})] };

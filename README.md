@@ -61,7 +61,7 @@ input yang menunggu diketik, dan stack frame untuk fungsi bersarang.
 
 | | |
 |---|---|
-| **Interpreter nyata** | Bukan simulasi animasi. Ekspresi di-parse dengan shunting-yard, punya presedensi, tipe, dan error runtime yang dinamai seperti aslinya (`Concatenation needs a String, got Real`). |
+| **Interpreter nyata** | Bukan simulasi animasi. Ekspresi di-parse dengan shunting-yard, punya presedensi, tipe, dan error runtime yang dinamai seperti aslinya (`+ needs a number, got String`, `Concatenation needs a String, got Real`). |
 | **Debugger lengkap** | Run (F5), single-step (F6), pause/resume (F7), stop (F8), breakpoint bersyarat, dan kontrol kecepatan langkah. Bentuk yang sedang dieksekusi menyala, kawat yang sedang dilalui berdenyut. |
 | **Variable Watch bertipe** | Integer, Real, String, Boolean, Void — tiap tipe punya warna sendiri, array satu dimensi ditampilkan dengan ellipsis bila panjang. |
 | **Konsol interaktif** | `Input` benar-benar menunggu ketikan; output bergulir dengan timestamp langkah. |
@@ -72,6 +72,7 @@ input yang menunggu diketik, dan stack frame untuk fungsi bersarang.
 | **Multi-fungsi** | Function manager dengan parameter by-value/by-reference dan nilai kembali; tiap fungsi punya kanvas sendiri. |
 | **Undo/redo & papan klip** | `Ctrl+Z` / `Ctrl+Y`, salin-tempel bentuk, sisip bentuk di tengah kawat cukup dengan hover. |
 | **Autosave lokal** | Dokumen terakhir disimpan di `localStorage`, jadi tidak hilang saat tab tertutup. |
+| **Ramah layar sentuh** | Di HP, toolbar memuat hanya tombol yang benar-benar dipakai (sisanya tetap ada di menu), jendela berpindah lewat geseran, tombol `+` selalu terlihat, dan diagram otomatis di-zoom agar muat selebar layar. |
 | **Nol dependensi** | Tidak ada framework, tidak ada bundler, tidak ada telemetri. Buka `index.html`, selesai. |
 
 ## Menjalankan
@@ -155,6 +156,9 @@ nyata. Yang paling sering salah ditebak oleh klon lain:
 | `Ctrl+scroll` | Zoom kanvas |
 | `Esc` | Tutup menu, popup, dialog |
 
+Di kanan-bawah kanvas ada pil zoom dengan tombol **Fit**: sekali klik menyesuaikan zoom supaya seluruh
+lebar diagram masuk jendela (di layar sempit ini juga berjalan otomatis setiap kali diagram berubah).
+
 Dua gerakan yang tidak ada di aplikasi desktop, tapi sangat membantu di browser: **hover sebuah kawat
 lalu klik `+`** untuk menyisip bentuk di tengah alur, dan **klik-ganda bentuk** untuk mengubahnya.
 
@@ -163,6 +167,10 @@ lalu klik `+`** untuk menyisip bentuk di tengah alur, dan **klik-ganda bentuk** 
 `.fprg` adalah XML terbuka. FlowForge membacanya dan menulisnya kembali dengan struktur atribut,
 fungsi, dan bentuk yang sama, jadi diagram bisa dipindah bolak-balik antara FlowForge dan Flowgorithm
 desktop. Yang tidak dibawa serta: preferensi jendela, riwayat undo, dan gambar kustom.
+
+`examples/penjurusan.fprg` adalah contoh dunia nyata (program penjurusan SMA dengan Boolean yang
+dibangun dari perbandingan `>=` yang disambung `or`/`and`) — muat lewat menu **File → Open .fprg**
+untuk menguji jalur impor secara langsung.
 
 ## Tema
 

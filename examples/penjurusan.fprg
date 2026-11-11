@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="Penjurusan_SMA"/>
+        <attribute name="authors" value="ziqintzy"/>
+        <attribute name="about" value="Boolean assignment built from comparisons joined with and"/>
+    </attributes>
+    <function name="Main" type="Void" variable="">
+        <parameters/>
+        <body>
+            <start/>
+            <output expression="&quot;=== PENJURUSAN SMA ===&quot;"/>
+            <declare name="minat" type="String" array="False" size=""/>
+            <declare name="mtk" type="Integer" array="False" size=""/>
+            <declare name="bio" type="Integer" array="False" size=""/>
+            <declare name="fis" type="Integer" array="False" size=""/>
+            <declare name="kim" type="Integer" array="False" size=""/>
+            <declare name="rata" type="Real" array="False" size=""/>
+            <declare name="layakipa" type="Boolean" array="False" size=""/>
+            <declare name="lagi" type="Boolean" array="False" size=""/>
+            <output expression="&quot;Minat jurusan (IPA / IPS / BAHASA): &quot;"/>
+            <input variable="minat"/>
+            <output expression="&quot;Nilai Matematika: &quot;"/>
+            <input variable="mtk"/>
+            <output expression="&quot;Nilai Biologi: &quot;"/>
+            <input variable="bio"/>
+            <output expression="&quot;Nilai Fisika: &quot;"/>
+            <input variable="fis"/>
+            <output expression="&quot;Nilai Kimia: &quot;"/>
+            <input variable="kim"/>
+            <assign variable="rata" expression="(mtk + bio + fis + kim) / 4"/>
+            <assign variable="layakipa" expression="mtk &gt;= 80 and bio &gt;= 78 and fis &gt;= 78 and kim &gt;= 78"/>
+            <declare name="k" type="Integer" array="False" size=""/>
+            <declare name="i" type="Integer" array="False" size=""/>
+            <if expression="minat = &quot;IPA&quot;">
+                <then>
+                    <if expression="layakipa">
+                        <then>
+                            <output expression="&quot;Masuk IPA, rata-rata &quot; &amp; rata"/>
+                        </then>
+                        <else>
+                            <output expression="&quot;IPA gagal, rata-rata &quot; &amp; rata"/>
+                        </else>
+                    </if>
+                </then>
+                <else>
+                    <output expression="&quot;Bukan IPA: &quot; &amp; minat"/>
+                </else>
+            </if>
+            <assign variable="lagi" expression="rata &gt; 75"/>
+            <while expression="lagi">
+                <output expression="&quot;ulang, rata-rata &quot; &amp; rata"/>
+                <assign variable="rata" expression="rata - 40"/>
+                <assign variable="lagi" expression="rata &gt; 75"/>
+            </while>
+            <output expression="&quot;cek: &quot; &amp; (layakipa and not (rata &gt; 100))"/>
+            <for variable="i" start="1" end="3" step="1">
+                <output expression="&quot;baris &quot; &amp; i"/>
+                <done/>
+            </for>
+            <call name="Tiga" return="k">
+                <parameter expression="mtk"/>
+            </call>
+            <output expression="&quot;Tiga kali Matematika: &quot; &amp; k"/>
+            <comment text="round-trip marker"/>
+            <end/>
+        </body>
+        </function>
+        <function name="Tiga" type="Integer" variable="hasil">
+            <parameters>
+                <parameter name="n" type="Integer" link="False"/>
+            </parameters>
+            <body>
+                <start/>
+                <assign variable="hasil" expression="n * 3"/>
+                <end/>
+            </body>
+        </function>
+</flowgorithm>

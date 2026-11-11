@@ -457,14 +457,14 @@
           return [indent(lvl, fill(c.decl, {
             n: ref(p.variable, c), t: c.ty[p.type], e: p.array ? arrayLit(p) : c.z[p.type] }))];
         case 'Assign': {
-          const m = String(p.expression || '').match(/^\s*([A-Za-z][A-Za-z0-9]*(?:\s*\[[^\]]*\])?)\s*=\s*([\s\S]+)$/);
-          if (!m) { return [indent(lvl, cmt(p.expression))]; }
-          const lhs = ref(m[1].replace(/\s+/g, ''), c);
+          const m = FG.splitAssign(p.expression);
+          if (m.at < 0) { return [indent(lvl, cmt(p.expression))]; }
+          const lhs = ref(m.lhs.replace(/\s+/g, ''), c);
           if (c.decl) {
-            const t = c.ty[typeOf(fn, m[1])] || '';
-            return [indent(lvl, fill(declAssign(c, lhs, t), { e: ex(m[2]) }))];
+            const t = c.ty[typeOf(fn, m.lhs)] || '';
+            return [indent(lvl, fill(declAssign(c, lhs, t), { e: ex(m.rhs) }))];
           }
-          return [indent(lvl, lhs + ' = ' + ex(m[2]) + c.semi)];
+          return [indent(lvl, lhs + ' = ' + ex(m.rhs) + c.semi)];
         }
         case 'Output':
           return [indent(lvl, fill(c.out, { e: ex(p.expression) }))];
