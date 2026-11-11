@@ -1,0 +1,19 @@
+# editor / OS
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# hasil ekspor & jepretan layar
+exports/
+*.download
+
+# pratinjau lokal
+.serve/
+http-server.pid
+
+# catatan sementara
+*.log
+tmp/

@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630"
+     role="img" aria-label="FlowForge — editor flowchart, interpreter dan debugger yang berjalan di browser">
+  <title>FlowForge</title>
+  <defs>
+    <style>
+      .sans{font-family:ui-sans-serif,system-ui,'Segoe UI',Roboto,sans-serif}
+      .mono{font-family:ui-monospace,'Cascadia Code','JetBrains Mono',Consolas,monospace}
+      .t1{font-size:60px;font-weight:800;fill:#e6e9f2;letter-spacing:-1.5px}
+      .t2{font-size:19px;fill:#9aa3c0}
+      .t3{font-size:14.5px;fill:#c7cee2}
+      .bdg{font-size:12px;fill:#c7cee2;text-anchor:middle}
+      .lbl{font-size:11.5px;fill:#e6e9f2;text-anchor:middle}
+      .cap{font-size:10.5px;fill:#2dd4bf;text-anchor:middle}
+      .w{fill:none;stroke:#5b6490;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .sh{fill:#12122a;stroke-width:2}
+      .s-term{stroke:#2dd4bf}.s-proc{stroke:#38bdf8}
+      .s-io{stroke:#fbbf24}.s-loop{stroke:#a3e635}.s-dec2{stroke:#fb7185}
+      .bar{fill:#23233a}
+
+      /* current-shape glow, cycles down the chart like a single-step run */
+      .hi{opacity:0;animation:cyc 7s linear infinite}
+      @keyframes cyc{0%{opacity:0}3%{opacity:1}11%{opacity:1}15%{opacity:0}100%{opacity:0}}
+
+      /* travelling pulse along the spine */
+      .comet{fill:none;stroke:#2dd4bf;stroke-width:3;stroke-linecap:round;
+        stroke-dasharray:22 900;animation:run 7s linear infinite}
+      @keyframes run{0%{stroke-dashoffset:920}100%{stroke-dashoffset:0}}
+
+      /* slow aurora drift */
+      .drift{animation:dr 18s ease-in-out infinite alternate}
+      .drift2{animation:dr 22s ease-in-out infinite alternate-reverse}
+      @keyframes dr{from{transform:translate(0,0)}to{transform:translate(46px,-28px)}}
+
+      @media (prefers-reduced-motion:reduce){
+        .hi,.comet{opacity:0;animation:none}
+        .drift,.drift2{animation:none}
+      }
+    </style>
+
+    <radialGradient id="au1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2dd4bf" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="au2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#a78bfa" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="au3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fb7185" stop-opacity=".35"/>
+      <stop offset="100%" stop-color="#fb7185" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="52"/>
+    </filter>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5b6490"/>
+    </marker>
+    <clipPath id="clip"><rect x="0" y="0" width="1200" height="630" rx="18"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#clip)">
+    <rect width="1200" height="630" fill="#07070c"/>
+    <g filter="url(#blur)" opacity=".8">
+      <ellipse class="drift" cx="250" cy="120" rx="230" ry="140" fill="url(#au1)"/>
+      <ellipse class="drift2" cx="1010" cy="520" rx="250" ry="150" fill="url(#au2)"/>
+      <ellipse class="drift" cx="700" cy="-20" rx="200" ry="120" fill="url(#au3)"/>
+    </g>
+    <rect width="1200" height="630" fill="#07070c" opacity=".42"/>
+
+    <!-- ================= left: identity ================= -->
+    <g class="sans">
+      <text x="64" y="128" class="t1">Flow<tspan fill="#2dd4bf">Forge</tspan></text>
+      <text x="66" y="166" class="t2">Editor flowchart, interpreter &amp; debugger</text>
+      <text x="66" y="192" class="t2">yang mengalir persis seperti Flowgorithm.</text>
+
+      <g>
+        <rect x="66" y="222" width="128" height="26" rx="13" fill="#12122a" stroke="#23233a"/>
+        <text x="130" y="239" class="bdg">tanpa build step</text>
+        <rect x="202" y="222" width="150" height="26" rx="13" fill="#12122a" stroke="#23233a"/>
+        <text x="277" y="239" class="bdg">0 dependensi</text>
+        <rect x="360" y="222" width="120" height="26" rx="13" fill="#12122a" stroke="#23233a"/>
+        <text x="420" y="239" class="bdg">jalan offline</text>
+      </g>
+
+      <g class="t3">
+        <circle cx="72" cy="292" r="3.5" fill="#2dd4bf"/><text x="88" y="297">Run, pause, single-step &amp; breakpoint (F5–F8)</text>
+        <circle cx="72" cy="322" r="3.5" fill="#a78bfa"/><text x="88" y="327">Variable Watch bertipe: Integer, Real, String, Boolean</text>
+        <circle cx="72" cy="352" r="3.5" fill="#38bdf8"/><text x="88" y="357">Generator kode ke 19 bahasa dari satu diagram</text>
+        <circle cx="72" cy="382" r="3.5" fill="#fbbf24"/><text x="88" y="387">Turtle Graphics + konsol interaktif</text>
+        <circle cx="72" cy="412" r="3.5" fill="#fb7185"/><text x="88" y="417">Berkas .fprg XML: buka &amp; simpan dua arah</text>
+      </g>
+
+      <g class="mono" fill="#5d6584" font-size="12.5">
+        <text x="66" y="470">$ flowgorithm.ziqintzy.my.id</text>
+        <text x="66" y="492" fill="#9aa3c0">19 bahasa · 11 bentuk · 4 tema</text>
+      </g>
+
+      <rect x="64" y="524" width="420" height="1" fill="#23233a"/>
+      <text x="66" y="556" class="mono" font-size="12" fill="#5d6584">
+        Implementasi mandiri — bukan kode, ikon, atau aset Flowgorithm.
+      </text>
+    </g>
+
+    <!-- ================= right: the editor window ================= -->
+    <g>
+      <rect x="524" y="52" width="640" height="540" rx="12" fill="#0e0e1c" stroke="#23233a"/>
+      <rect x="524" y="52" width="640" height="30" rx="12" class="bar"/>
+      <rect x="524" y="70" width="640" height="12" fill="#0e0e1c"/>
+      <circle cx="546" cy="67" r="5" fill="#fb7185"/>
+      <circle cx="564" cy="67" r="5" fill="#fbbf24"/>
+      <circle cx="582" cy="67" r="5" fill="#2dd4bf"/>
+      <text x="604" y="71" class="mono" font-size="12" fill="#9aa3c0">Deret_Aritmatika.fprg — Main</text>
+      <text x="1146" y="71" class="mono" font-size="11" fill="#5d6584" text-anchor="end">F5 jalankan</text>
+
+      <!-- wires -->
+      <g class="w">
+        <path d="M870 122 L870 140" marker-end="url(#arw)"/>
+        <path d="M870 176 L870 194" marker-end="url(#arw)"/>
+        <path d="M870 230 L870 248" marker-end="url(#arw)"/>
+        <path d="M870 284 L870 302" marker-end="url(#arw)"/>
+        <path d="M794 336 L700 336 L700 386" marker-end="url(#arw)"/>
+        <path d="M946 336 L1040 336 L1040 386" marker-end="url(#arw)"/>
+        <path d="M700 424 L700 446 L842 446"/>
+        <path d="M1040 424 L1040 446 L858 446"/>
+        <path d="M870 284 L742 284 L742 213 L780 213" marker-end="url(#arw)"/>
+        <path d="M870 452 L870 466" marker-end="url(#arw)"/>
+        <path d="M870 502 L870 518" marker-end="url(#arw)"/>
+      </g>
+      <circle cx="870" cy="446" r="6" fill="#12122a" stroke="#5b6490" stroke-width="2"/>
+
+      <!-- travelling pulse -->
+      <path class="comet" d="M870 122 L870 176 L870 230 L870 284 L870 336 L870 446 L870 502 L870 556"/>
+
+      <!-- shapes -->
+      <g class="sh">
+        <g class="s-term">
+          <rect x="806" y="88" width="128" height="34" rx="17"/>
+          <rect class="hi" x="801" y="83" width="138" height="44" rx="22" fill="none" stroke="#2dd4bf" stroke-width="2" style="animation-delay:0s"/>
+        </g>
+        <g class="s-io">
+          <path d="M798 142 L942 142 L922 176 L778 176 Z"/>
+          <path class="hi" d="M794 137 L946 137 L926 181 L774 181 Z" fill="none" stroke="#fbbf24" stroke-width="2" style="animation-delay:.62s"/>
+        </g>
+        <g class="s-loop">
+          <path d="M806 196 L934 196 L958 213 L934 230 L806 230 L782 213 Z"/>
+          <path class="hi" d="M802 190 L938 190 L966 213 L938 236 L802 236 L774 213 Z" fill="none" stroke="#a3e635" stroke-width="2" style="animation-delay:1.24s"/>
+        </g>
+        <g class="s-proc">
+          <rect x="784" y="250" width="172" height="34" rx="5"/>
+          <rect class="hi" x="779" y="245" width="182" height="44" rx="8" fill="none" stroke="#38bdf8" stroke-width="2" style="animation-delay:1.86s"/>
+        </g>
+        <g class="s-dec2">
+          <path d="M870 304 L934 336 L870 368 L806 336 Z"/>
+          <path class="hi" d="M870 298 L942 336 L870 374 L798 336 Z" fill="none" stroke="#fb7185" stroke-width="2" style="animation-delay:2.48s"/>
+        </g>
+        <g class="s-io">
+          <path d="M628 390 L772 390 L752 424 L608 424 Z"/>
+          <path class="hi" d="M624 385 L776 385 L756 429 L604 429 Z" fill="none" stroke="#fbbf24" stroke-width="2" style="animation-delay:3.1s"/>
+        </g>
+        <g class="s-io">
+          <path d="M968 390 L1112 390 L1092 424 L948 424 Z"/>
+          <path class="hi" d="M964 385 L1116 385 L1096 429 L944 429 Z" fill="none" stroke="#fbbf24" stroke-width="2" style="animation-delay:3.1s"/>
+        </g>
+        <g class="s-io">
+          <path d="M798 468 L942 468 L922 502 L778 502 Z"/>
+          <path class="hi" d="M794 463 L946 463 L926 507 L774 507 Z" fill="none" stroke="#fbbf24" stroke-width="2" style="animation-delay:3.72s"/>
+        </g>
+        <g class="s-term">
+          <rect x="806" y="520" width="128" height="34" rx="17"/>
+          <rect class="hi" x="801" y="515" width="138" height="44" rx="22" fill="none" stroke="#2dd4bf" stroke-width="2" style="animation-delay:4.34s"/>
+        </g>
+      </g>
+
+      <!-- shape labels -->
+      <g class="mono lbl">
+        <text x="870" y="110">Start</text>
+        <text x="862" y="163">Input n</text>
+        <text x="870" y="217">While i &lt;= n</text>
+        <text x="870" y="271">suku = suku + i</text>
+        <text x="870" y="341" style="font-size:11px">suku &gt; 0</text>
+        <text x="692" y="411">Output "kecil"</text>
+        <text x="1032" y="411">Output "besar"</text>
+        <text x="862" y="489">Output suku</text>
+        <text x="870" y="542">End</text>
+      </g>
+      <g class="cap mono">
+        <text x="740" y="330">False</text>
+        <text x="1000" y="330">True</text>
+      </g>
+    </g>
+  </g>
+</svg>
